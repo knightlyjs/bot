@@ -1,9 +1,7 @@
 {
   "name": "knightly-bot",
-  "private": true,
   "version": "0.0.0",
   "description": "",
-  "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -14,12 +12,12 @@
     "node": ">=14"
   },
   "bugs": {
-    "url": "https://github.com/knightly-build/knightly-bot/issues"
+    "url": "https://github.com/knightlyjs/knightly-bot/issues"
   },
-  "homepage": "https://github.com/knightly-build/knightly-bot#readme",
+  "homepage": "https://github.com/knightlyjs/knightly-bot#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/knightly-build/knightly-bot.git"
+    "url": "git+https://github.com/knightlyjs/knightly-bot.git"
   },
   "scripts": {
     "prepare": "npm run build",
