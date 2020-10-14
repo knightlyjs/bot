@@ -17,13 +17,16 @@ async function run() {
 
   const run = argv.loop ? loop : (fn: Function) => fn()
 
-  if (argv[0] === 'cleanup') {
-    run(cleanUpClosedPR, 60 * minute)
-  }
-  else {
+  const command = argv._[0]
+
+  if (['inbox', 'all'].includes(command))
     run(checkNotifications, 1 * minute)
+
+  if (['votes', 'all'].includes(command))
     run(checkVotes, 15 * minute)
-  }
+
+  if (['cleanup', 'all'].includes(command))
+    run(cleanUpClosedPR, 60 * minute)
 }
 
 run()
