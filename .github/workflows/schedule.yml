@@ -2,8 +2,8 @@ name: Knightly
 
 on:
   schedule:
-    # every 10 mins
-    - cron: 0/10 * * * * 
+    # every 15 mins
+    - cron: 0/15 * * * * 
   workflow_dispatch:
 
 jobs:
