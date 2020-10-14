@@ -64,3 +64,15 @@ export function addPullTask(info: PullRequestInfo) {
   }
   return false
 }
+
+export function removePullTask(info: PullRequestInfo) {
+  const repo = getRepo(info)
+  if (repo?.pulls) {
+    const index = repo.pulls.indexOf(info.issue_number)
+    if (index >= 0) {
+      repo.pulls.splice(index, 1)
+      return true
+    }
+  }
+  return false
+}

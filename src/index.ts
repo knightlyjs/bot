@@ -4,6 +4,7 @@ import { checkNotifications } from './notification'
 import { store, tasks } from './store'
 import { loop } from './utils'
 import { checkVotes } from './vote'
+// import { cleanUpClosedPR } from './tasks'
 
 const argv = minimist(process.argv.slice(2))
 
@@ -18,6 +19,7 @@ async function run() {
 
   run(checkNotifications, 1 * minute)
   run(checkVotes, 15 * minute)
+  // run(cleanUpClosedPR, 60 * minute)
 }
 
 run()
