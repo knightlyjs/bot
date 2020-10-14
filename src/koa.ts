@@ -7,5 +7,5 @@ export async function startKoa() {
     ctx.body = 'Hey!'
   })
 
-  app.listen(80)
+  app.listen(process.env.PORT || 80)
 }
