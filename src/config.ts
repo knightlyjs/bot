@@ -1,7 +1,8 @@
 import { Octokit } from '@octokit/rest'
 import dotenv from 'dotenv'
 
-const { parsed: env = {} } = dotenv.config({})
+const { parsed } = dotenv.config({})
+const env = { ...process.env, ...parsed } as Record<string, string>
 
 /**
  * GitHub handles for admin,
@@ -13,8 +14,9 @@ export const ADMIN_HANDLES = [
   'antfu',
 ]
 
-export const GITHUB_TOKEN: string = env.GITHUB_TOKEN! || process.env.GITHUB_TOKEN!
-export const KNIGHTLY_BOT_STORE_GIST: string = env.KNIGHTLY_BOT_STORE_GIST! || process.env.KNIGHTLY_BOT_STORE_GIST!
+export const GITHUB_TOKEN = env.GITHUB_TOKEN
+export const KNIGHTLY_BOT_STORE_GIST = env.KNIGHTLY_BOT_STORE_GIST
+export const SENTRY_DSN = env.SENTRY_DSN
 
 export const BOT_NAME = 'knightly-bot'
 export const VOTE_REQUIREMENT = 10
