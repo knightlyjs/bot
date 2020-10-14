@@ -20,8 +20,6 @@
     "url": "git+https://github.com/knightlyjs/knightly-bot.git"
   },
   "scripts": {
-    "prepare": "npm run build",
-    "watch": "npm run build -- --watch",
     "dev": "esno src/index.ts",
     "start": "esno src/index.ts",
     "build": "tsup src/index.ts --format cjs,esm --dts",
