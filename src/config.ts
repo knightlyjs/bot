@@ -15,9 +15,11 @@ export const ADMIN_HANDLES = [
 ]
 
 export const GITHUB_TOKEN = env.GITHUB_TOKEN
-export const KNIGHTLY_BOT_STORE_GIST = env.KNIGHTLY_BOT_STORE_GIST
 export const SENTRY_DSN = env.SENTRY_DSN
 export const HEROKU = env.HEROKU
+
+export const KNIGHTLY_BOT_GIST_STORE = env.KNIGHTLY_BOT_GIST_STORE
+export const KNIGHTLY_BOT_GIST_TASKS = env.KNIGHTLY_BOT_GIST_TASKS
 
 export const BOT_NAME = 'knightly-bot'
 export const VOTE_REQUIREMENT = 10

@@ -2,7 +2,10 @@ import chalk from 'chalk'
 import pLimit from 'p-limit'
 import { BOT_NAME, octokit } from './config'
 import { logger } from './log'
-import { PullRequestInfo } from './store'
+import { Confused } from './reactions'
+import { getRepo } from './store'
+import { TEMPLATE_REPO_NOT_CONFIGURED } from './templates'
+import { getCommentIfFromUrl, getPullInfoFromUrl } from './utils'
 import { createVoteComment } from './vote'
 
 export async function checkNotifications() {
@@ -17,25 +20,35 @@ export async function checkNotifications() {
 
   await Promise.all(notifications.map(i =>
     limit(async() => {
-      const matches = /api\.github\.com\/repos\/(.+?)\/(.+?)\/pulls\/(.+?)/.exec(
-        i.subject.url,
-      )
-      if (!matches)
+      const pr = getPullInfoFromUrl(i.subject.url)
+      const comment_id = getCommentIfFromUrl(i.subject.latest_comment_url)
+      if (!pr || !comment_id)
         return
-
-      const [, owner, repo, issue_number] = matches
-      const pr: PullRequestInfo = {
-        owner, repo, issue_number: +issue_number,
-      }
 
       const {
         data: { body, user },
-      } = await octokit.request(i.subject.latest_comment_url)
+      } = await octokit.issues.getComment({
+        ...pr,
+        comment_id,
+      })
 
-      logger.info(`comment received on ${owner}/${repo}#${issue_number}(@${user?.login}) ${chalk.blue(body)}`)
+      logger.info(`comment received on ${chalk.green(`${pr.owner}/${pr.repo}#${pr.issue_number}(@${user?.login})`)} ${chalk.blue(body)}`)
 
-      if (new RegExp(`@${BOT_NAME} build this`, 'i').exec(body))
-        await createVoteComment(pr)
+      if (new RegExp(`@${BOT_NAME} build this`, 'i').exec(body)) {
+        if (getRepo(pr)) {
+          await createVoteComment(pr)
+        }
+        else {
+          Confused(pr, comment_id)
+          await octokit.issues.createComment({
+            ...pr,
+            body: TEMPLATE_REPO_NOT_CONFIGURED,
+          })
+        }
+      }
+      else {
+        Confused(pr, comment_id)
+      }
     })),
   )
 }

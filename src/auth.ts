@@ -1,8 +1,13 @@
-import { BOT_NAME, KNIGHTLY_BOT_STORE_GIST, octokit } from './config'
+import { BOT_NAME, KNIGHTLY_BOT_GIST_STORE, KNIGHTLY_BOT_GIST_TASKS, octokit } from './config'
 
 export async function checkBotName() {
-  if (!KNIGHTLY_BOT_STORE_GIST) {
-    console.error('Invalid KNIGHTLY_BOT_STORE_GIST is provided.')
+  if (!KNIGHTLY_BOT_GIST_STORE) {
+    console.error('Invalid KNIGHTLY_BOT_GIST_STORE provided.')
+    process.exit(1)
+  }
+
+  if (!KNIGHTLY_BOT_GIST_TASKS) {
+    console.error('Invalid KNIGHTLY_BOT_GIST_TASKS provided.')
     process.exit(1)
   }
 
@@ -10,7 +15,7 @@ export async function checkBotName() {
     const { data: user } = await octokit.users.getAuthenticated()
 
     if (!user || user.login !== BOT_NAME) {
-      console.error('Invalid GITHUB_TOKEN is provided.')
+      console.error('Invalid GITHUB_TOKEN provided.')
       process.exit(1)
     }
   }

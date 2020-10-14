@@ -1,29 +1,30 @@
 import { Ref, ref } from '@vue/reactivity'
 import { watch } from '@vue-reactivity/watch'
 import { throttle } from 'throttle-debounce'
-import { KNIGHTLY_BOT_STORE_GIST, octokit } from './config'
+import YAML from 'js-yaml'
+import { octokit } from './config'
 import { Sentry } from './sentry'
 
-export function useGist<T>(init: T) {
+export function useGist<T>(id: string, filename: string, init: T) {
   let writing = false
 
   const r = ref(init) as unknown as Ref<T> & { ready: () => Promise<void> }
 
   async function fetch() {
-    const { data: gist } = await octokit.gists.get({ gist_id: KNIGHTLY_BOT_STORE_GIST })
+    const { data: gist } = await octokit.gists.get({ gist_id: id })
     writing = true
-    r.value = JSON.parse(gist.files['store.json'].content || '{}')
+    r.value = YAML.safeLoad(gist.files[filename].content || '{}') as unknown as T
     writing = false
   }
 
   async function update(v: any) {
     try {
       await octokit.gists.update({
-        gist_id: KNIGHTLY_BOT_STORE_GIST,
+        gist_id: id,
         files: {
-          'store.json': {
-            filename: 'store.json',
-            content: JSON.stringify(v, null, 2),
+          [filename]: {
+            filename,
+            content: YAML.safeDump(v),
           },
         },
       })

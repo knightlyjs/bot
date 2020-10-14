@@ -1,8 +1,13 @@
-import { useGist } from './gist'
+import type { KnightlyUserConfig } from 'knightly'
+import { KNIGHTLY_BOT_GIST_STORE, KNIGHTLY_BOT_GIST_TASKS } from './config'
+import { useGist } from './useGist'
 
-export interface PullRequestInfo {
+export interface RepoInfo {
   owner: string
   repo: string
+}
+
+export interface PullRequestInfo extends RepoInfo {
   issue_number: number
 }
 
@@ -11,19 +16,22 @@ export interface VoteInfo extends PullRequestInfo {
   satisfied: boolean
 }
 
-export interface PullRequestTask extends PullRequestInfo {
-  active: boolean
-}
-
 export interface Store {
   votes: VoteInfo[]
-  pull_tasks: PullRequestTask[]
 }
 
-export const store = useGist<Store>({
+export const store = useGist<Store>(KNIGHTLY_BOT_GIST_STORE, 'store.yml', {
   votes: [],
-  pull_tasks: [],
 })
+
+export const tasks = useGist<KnightlyUserConfig[]>(KNIGHTLY_BOT_GIST_TASKS, 'tasks.yml', [])
+
+export function storeReady() {
+  return Promise.all([
+    store.ready(),
+    tasks.ready(),
+  ])
+}
 
 export function isSamePR(a: PullRequestInfo, b: PullRequestInfo) {
   return a.owner === b.owner && a.repo === b.repo && a.issue_number === b.issue_number
@@ -33,6 +41,26 @@ export function getVoteInfo(info: PullRequestInfo) {
   return store.value.votes.find(i => isSamePR(i, info))
 }
 
-export function getPullTask(info: PullRequestInfo) {
-  return store.value.pull_tasks.find(i => isSamePR(i, info))
+export function getRepo({ owner, repo }: RepoInfo) {
+  return tasks.value
+    .find(i =>
+      (i.repoUrl && i.repoUrl === `${owner}/${repo}`)
+      || (i.repo === repo && i.owner === owner),
+    )
+}
+
+export function hasPullTask(info: PullRequestInfo) {
+  const repo = getRepo(info)
+  if (repo)
+    return Boolean(repo.pulls?.includes(info.issue_number))
+  return false
+}
+
+export function addPullTask(info: PullRequestInfo) {
+  const repo = getRepo(info)
+  if (repo) {
+    repo.pulls = Array.from(new Set([...(repo.pulls || []), info.issue_number]))
+    return true
+  }
+  return false
 }

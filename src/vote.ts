@@ -1,8 +1,10 @@
+import chalk from 'chalk'
 import pLimit from 'p-limit'
 import { ADMIN_HANDLES, octokit, VOTE_REQUIREMENT } from './config'
 import { logger } from './log'
+import { ThumbsUp } from './reactions'
 import { Sentry } from './sentry'
-import { getPullTask, getVoteInfo, PullRequestInfo, store, VoteInfo } from './store'
+import { addPullTask, getVoteInfo, hasPullTask, PullRequestInfo, store, VoteInfo } from './store'
 import { TEMPLATE_VOTE, TEMPLATE_VOTE_SATISFIED } from './templates'
 
 export async function createVoteComment(pr: PullRequestInfo) {
@@ -20,34 +22,19 @@ export async function createVoteComment(pr: PullRequestInfo) {
     satisfied: false,
   })
 
-  octokit.reactions.createForIssueComment({
-    ...pr,
-    comment_id: comment.id,
-    content: '+1',
-  })
+  ThumbsUp(pr, comment.id)
 }
 
 export async function updateVoteComment(vote: VoteInfo) {
-  if (getPullTask(vote))
+  if (hasPullTask(vote))
     return
 
   await octokit.issues.updateComment({
     ...vote,
-    body: TEMPLATE_VOTE_SATISFIED('//TODO:'),
+    body: TEMPLATE_VOTE_SATISFIED('//TODO: get npm package name'),
   })
 
-  const {
-    owner,
-    repo,
-    issue_number,
-  } = vote
-
-  store.value.pull_tasks.push({
-    owner,
-    repo,
-    issue_number,
-    active: true,
-  })
+  addPullTask(vote)
 }
 
 export async function getCommentVotes({ owner, repo, issue_number, comment_id }: VoteInfo) {
@@ -79,12 +66,14 @@ export async function checkVotes() {
 
   await Promise.all(
     store.value.votes
-      .filter(v => v.satisfied)
+      .filter(v => !v.satisfied)
       .map(vote =>
         limit(async() => {
           try {
-            if (await checkVoteSatisfied(vote))
+            if (await checkVoteSatisfied(vote)) {
+              logger.info(`vote satisfied from ${chalk.green(`${vote.owner}/${vote.repo}#${vote.issue_number}`)}`)
               await updateVoteComment(vote)
+            }
           }
           catch (e) {
             Sentry.captureException(e)
