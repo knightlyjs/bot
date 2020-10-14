@@ -21,5 +21,5 @@ Knightly build enabled, every night at 00:00 UTC <sup>(skip if no change)</sup>
 export const TEMPLATE_REPO_NOT_CONFIGURED = `
 This repo does not have Knightly configured yet.
 
-Please open a request issue to enable this repo in [knightlyjs/tasks](https://github.com/knightlyjs/tasks) first.
+Please open a request issue to enable this repo in [knightlyjs/tasks](https://github.com/knightlyjs/tasks/issues/new?assignees=&labels=repo-request&template=knightly-build-request.md) first.
 `.trim()
