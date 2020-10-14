@@ -1,9 +1,9 @@
-name: Knightly
+name: Check Inbox
 
 on:
   schedule:
-    # every 15 mins
-    - cron: 0/15 * * * * 
+    # every 30 mins
+    - cron: 0/30 * * * * 
   workflow_dispatch:
 
 jobs:
@@ -20,6 +20,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          
           KNIGHTLY_BOT_GIST_STORE: ${{ secrets.KNIGHTLY_BOT_GIST_STORE }}
           KNIGHTLY_BOT_GIST_TASKS: ${{ secrets.KNIGHTLY_BOT_GIST_TASKS }}

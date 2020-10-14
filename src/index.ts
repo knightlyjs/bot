@@ -2,9 +2,9 @@ import minimist from 'minimist'
 import { checkBotName } from './auth'
 import { checkNotifications } from './notification'
 import { store, tasks } from './store'
+import { cleanUpClosedPR } from './tasks'
 import { loop } from './utils'
 import { checkVotes } from './vote'
-// import { cleanUpClosedPR } from './tasks'
 
 const argv = minimist(process.argv.slice(2))
 
@@ -17,9 +17,13 @@ async function run() {
 
   const run = argv.loop ? loop : (fn: Function) => fn()
 
-  run(checkNotifications, 1 * minute)
-  run(checkVotes, 15 * minute)
-  // run(cleanUpClosedPR, 60 * minute)
+  if (argv[0] === 'cleanup') {
+    run(cleanUpClosedPR, 60 * minute)
+  }
+  else {
+    run(checkNotifications, 1 * minute)
+    run(checkVotes, 15 * minute)
+  }
 }
 
 run()
