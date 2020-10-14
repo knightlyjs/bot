@@ -1,4 +1,5 @@
 import { checkBotName } from './auth'
+import { HEROKU } from './config'
 import { startKoa } from './koa'
 import { checkNotifications } from './notification'
 import { store } from './store'
@@ -11,7 +12,8 @@ async function run() {
   await checkBotName()
   await store.ready()
 
-  startKoa()
+  if (HEROKU)
+    startKoa()
 
   loop(checkNotifications, 1 * minute)
   loop(checkVotes, 15 * minute)

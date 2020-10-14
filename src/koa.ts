@@ -4,8 +4,8 @@ export async function startKoa() {
   const app = new Koa()
 
   app.use(async(ctx) => {
-    ctx.body = 'Hello World'
+    ctx.body = 'Hey!'
   })
 
-  app.listen(3000)
+  app.listen(80)
 }
