@@ -5,7 +5,7 @@ import { logger } from './log'
 import { ThumbsUp } from './reactions'
 import { Sentry } from './sentry'
 import { addPullTask, getRepo, getVoteInfo, hasPullTask, PullRequestInfo, store, VoteInfo } from './store'
-import { TEMPLATE_VOTE, TEMPLATE_VOTE_SATISFIED } from './templates'
+import { TEMPLATE_BUILD_ENABLED, TEMPLATE_VOTE, TEMPLATE_VOTE_SATISFIED } from './templates'
 
 export async function createVoteComment(pr: PullRequestInfo) {
   if (getVoteInfo(pr))
@@ -30,9 +30,14 @@ export async function updateVoteCommentSatisfied(vote: VoteInfo) {
   if (!repo || hasPullTask(vote))
     return
 
-  await octokit.issues.updateComment({
+  const { data: comment } = await octokit.issues.createComment({
     ...vote,
-    body: TEMPLATE_VOTE_SATISFIED(`https://www.npmjs.com/package/${repo.publishName}/v/pr${vote.issue_number}`),
+    body: TEMPLATE_BUILD_ENABLED(`https://www.npmjs.com/package/${repo.publishName}/v/pr${vote.issue_number}`),
+  })
+
+  octokit.issues.updateComment({
+    ...vote,
+    body: TEMPLATE_VOTE_SATISFIED(comment.url),
   })
 
   addPullTask(vote)
