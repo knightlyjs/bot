@@ -1,5 +1,8 @@
+import pLimit from 'p-limit'
 import { ADMIN_HANDLES, octokit, VOTE_REQUIREMENT } from './config'
-import { getPrTask, getVoteInfo, PullRequestInfo, store, VoteInfo } from './store'
+import { logger } from './log'
+import { Sentry } from './sentry'
+import { getPullTask, getVoteInfo, PullRequestInfo, store, VoteInfo } from './store'
 import { TEMPLATE_VOTE, TEMPLATE_VOTE_SATISFIED } from './templates'
 
 export async function createVoteComment(pr: PullRequestInfo) {
@@ -25,7 +28,7 @@ export async function createVoteComment(pr: PullRequestInfo) {
 }
 
 export async function updateVoteComment(vote: VoteInfo) {
-  if (getPrTask(vote))
+  if (getPullTask(vote))
     return
 
   await octokit.issues.updateComment({
@@ -39,7 +42,7 @@ export async function updateVoteComment(vote: VoteInfo) {
     issue_number,
   } = vote
 
-  store.value.prTasks.push({
+  store.value.pull_tasks.push({
     owner,
     repo,
     issue_number,
@@ -67,4 +70,26 @@ export async function checkVoteSatisfied(vote: VoteInfo) {
   }
 
   return vote.satisfied
+}
+
+export async function checkVotes() {
+  logger.info('checking votes...')
+
+  const limit = pLimit(10)
+
+  await Promise.all(
+    store.value.votes
+      .filter(v => v.satisfied)
+      .map(vote =>
+        limit(async() => {
+          try {
+            if (await checkVoteSatisfied(vote))
+              await updateVoteComment(vote)
+          }
+          catch (e) {
+            Sentry.captureException(e)
+          }
+        }),
+      ),
+  )
 }

@@ -1,17 +1,17 @@
+import { checkBotName } from './auth'
 import { checkNotifications } from './notification'
 import { store } from './store'
-import { checkVoteSatisfied, updateVoteComment } from './vote'
+import { loop } from './utils'
+import { checkVotes } from './vote'
+
+const minute = 60 * 1000
 
 async function run() {
-  await store.file.waitForReady()
+  await checkBotName()
+  await store.ready()
 
-  await checkNotifications()
-
-  console.log(store.value)
-
-  const vote = store.value.votes[0]
-  if (await checkVoteSatisfied(vote))
-    await updateVoteComment(vote)
+  loop(checkNotifications, 1 * minute)
+  loop(checkVotes, 15 * minute)
 }
 
 run()

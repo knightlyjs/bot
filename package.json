@@ -23,6 +23,7 @@
     "prepare": "npm run build",
     "watch": "npm run build -- --watch",
     "dev": "esno src/index.ts",
+    "start": "esno src/index.ts",
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "publish:ci": "npm publish --access public",
     "release": "npx bumpp --commit --push --tag && npm run publish:ci",
@@ -46,12 +47,23 @@
   ],
   "dependencies": {
     "@octokit/rest": "^18.0.6",
-    "@vue-reactivity/fs": "^0.1.0"
+    "@sentry/node": "^5.26.0",
+    "@sentry/tracing": "^5.26.0",
+    "@vue-reactivity/fs": "^0.1.1",
+    "@vue-reactivity/watch": "^0.1.4",
+    "@vue/reactivity": "^3.0.0",
+    "chalk": "^4.1.0",
+    "delay": "^4.4.0",
+    "p-limit": "^3.0.2",
+    "throttle-debounce": "^2.3.0",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@antfu/eslint-config-ts": "^0.3.3",
     "@types/jest": "^26.0.14",
     "@types/node": "^14.11.8",
+    "@types/pino": "^6.3.2",
+    "@types/throttle-debounce": "^2.1.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.11.0",
     "eslint-plugin-jest": "^24.1.0",
