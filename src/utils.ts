@@ -32,6 +32,10 @@ export function getPullInfoFromUrl(url: string) {
     return
 
   const [, owner, repo, issue_number] = matches
+
+  if (+issue_number)
+    return
+
   const pr: PullRequestInfo = {
     owner, repo, issue_number: +issue_number,
   }
