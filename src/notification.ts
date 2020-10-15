@@ -8,6 +8,9 @@ import { TEMPLATE_REPO_NOT_CONFIGURED } from './templates'
 import { getCommentIfFromUrl, getPullInfoFromUrl } from './utils'
 import { createVoteComment, isMaintainer, startBuildFor } from './vote'
 
+const REGEX_PIN_BOT = new RegExp(`@${BOT_NAME}`, 'i')
+const REGEX_BUILD_THIS = new RegExp(`@${BOT_NAME} build this`, 'i')
+
 export async function checkNotifications() {
   logger.info('checking notifications...')
 
@@ -34,7 +37,10 @@ export async function checkNotifications() {
 
       logger.info(`comment received on ${chalk.green(`${pr.owner}/${pr.repo}#${pr.issue_number}(@${user?.login})`)} ${chalk.blue(body)}`)
 
-      if (new RegExp(`@${BOT_NAME} build this`, 'i').exec(body)) {
+      if (!body.match(REGEX_PIN_BOT))
+        return
+
+      if (!body.match(REGEX_BUILD_THIS)) {
         const task = getRepoTask(pr)
 
         if (task) {
