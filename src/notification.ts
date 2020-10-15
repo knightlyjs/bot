@@ -21,6 +21,8 @@ export async function checkNotifications() {
     limit(async() => {
       const pr = getPullInfoFromUrl(i.subject.url)
       const comment_id = getCommentIfFromUrl(i.subject.latest_comment_url)
+      console.log(i.subject.url, pr)
+      console.log(i.subject.latest_comment_url, comment_id)
       if (!pr || !comment_id)
         return
 
