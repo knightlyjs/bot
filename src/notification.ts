@@ -3,7 +3,7 @@ import pLimit from 'p-limit'
 import { BOT_NAME, octokit } from './config'
 import { logger } from './log'
 import { Confused } from './reactions'
-import { getRepoTask } from './store'
+import { getRepoTask, hasPullJob } from './store'
 import { TEMPLATE_REPO_NOT_CONFIGURED } from './templates'
 import { getCommentIfFromUrl, getPullInfoFromUrl } from './utils'
 import { createVoteComment, isMaintainer, startBuildFor } from './vote'
@@ -38,6 +38,8 @@ export async function checkNotifications() {
         const task = getRepoTask(pr)
 
         if (task) {
+          if (hasPullJob(pr))
+            return
           if (isMaintainer(user?.login))
             await startBuildFor(task, pr)
           else
