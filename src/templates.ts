@@ -11,7 +11,9 @@ export const TEMPLATE_VOTE_SATISFIED = (url: string) => `
 `.trim()
 
 export const TEMPLATE_BUILD_ENABLED = (npmLink: string) => `
-![Nightly Build](https://github.com/knightlyjs/knightly/blob/main/res/badge.svg?raw=true)
+<!--KNIGHTLY-BUILD-ENABLED-->
+
+[![Nightly Build](https://github.com/knightlyjs/knightly/blob/main/res/badge.svg?raw=true)](https://github.com/knightlyjs/knightly)
 
 🌒 Knightly build enabled, release every night at 00:00 UTC <sup>(skip if no change)</sup>
 
