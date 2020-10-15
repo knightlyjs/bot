@@ -14,7 +14,6 @@ export async function checkNotifications() {
   const notifications = (await octokit.activity.listNotificationsForAuthenticatedUser({ all: false }))
     .data
     .filter(i => i.reason === 'mention' && i.subject.type === 'PullRequest')
-  await octokit.activity.markNotificationsAsRead()
 
   const limit = pLimit(5)
 

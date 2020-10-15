@@ -27,7 +27,7 @@ export async function loop(fn: () => Promise<void>, interval: number) {
 }
 
 export function getPullInfoFromUrl(url: string) {
-  const matches = /api\.github\.com\/repos\/(.+?)\/(.+?)\/pulls\/(\d+?)(?:\/|$)/.exec(url)
+  const matches = /api\.github\.com\/repos\/(.+?)\/(.+?)\/pulls\/(\d+)/.exec(url)
   if (!matches)
     return
 
