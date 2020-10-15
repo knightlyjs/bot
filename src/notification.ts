@@ -40,7 +40,7 @@ export async function checkNotifications() {
       if (!body.match(REGEX_PIN_BOT))
         return
 
-      if (!body.match(REGEX_BUILD_THIS)) {
+      if (body.match(REGEX_BUILD_THIS)) {
         const task = getRepoTask(pr)
 
         if (task) {
