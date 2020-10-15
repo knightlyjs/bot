@@ -1,10 +1,11 @@
 import chalk from 'chalk'
+import { KnightlyTask } from 'knightly'
 import pLimit from 'p-limit'
 import { ADMIN_HANDLES, octokit, VOTE_REQUIREMENT } from './config'
 import { logger } from './log'
 import { ThumbsUp } from './reactions'
 import { Sentry } from './sentry'
-import { addPullTask, getRepo, getVoteInfo, hasPullTask, PullRequestInfo, store, VoteInfo } from './store'
+import { addPullJob, getRepoTask, getVoteInfo, hasPullJob, PullRequestInfo, store, VoteInfo } from './store'
 import { TEMPLATE_BUILD_ENABLED, TEMPLATE_VOTE, TEMPLATE_VOTE_SATISFIED } from './templates'
 
 export async function createVoteComment(pr: PullRequestInfo) {
@@ -25,22 +26,28 @@ export async function createVoteComment(pr: PullRequestInfo) {
   ThumbsUp(pr, comment.id)
 }
 
+export async function startBuildFor(task: KnightlyTask, pull: PullRequestInfo) {
+  const { data: comment } = await octokit.issues.createComment({
+    ...pull,
+    body: TEMPLATE_BUILD_ENABLED(`https://www.npmjs.com/package/${task.publishName}/v/pr${pull.issue_number}`),
+  })
+
+  addPullJob(pull)
+
+  return comment
+}
+
 export async function updateVoteCommentSatisfied(vote: VoteInfo) {
-  const repo = getRepo(vote)
-  if (!repo || hasPullTask(vote))
+  const repo = getRepoTask(vote)
+  if (!repo || hasPullJob(vote))
     return
 
-  const { data: comment } = await octokit.issues.createComment({
-    ...vote,
-    body: TEMPLATE_BUILD_ENABLED(`https://www.npmjs.com/package/${repo.publishName}/v/pr${vote.issue_number}`),
-  })
+  const comment = await startBuildFor(repo, vote)
 
   octokit.issues.updateComment({
     ...vote,
     body: TEMPLATE_VOTE_SATISFIED(comment.url),
   })
-
-  addPullTask(vote)
 }
 
 export async function getCommentVotes({ owner, repo, issue_number, comment_id }: VoteInfo) {
@@ -58,11 +65,15 @@ export async function checkVoteSatisfied(vote: VoteInfo) {
   if (!vote.satisfied) {
     const votes = (await getCommentVotes(vote)).filter(i => i.content === '+1')
 
-    if (votes.length > VOTE_REQUIREMENT || votes.map(i => i.user.login).some(i => ADMIN_HANDLES.includes(i)))
+    if (votes.length > VOTE_REQUIREMENT || votes.map(i => i.user.login).some(i => isMaintainer(i)))
       vote.satisfied = true
   }
 
   return vote.satisfied
+}
+
+export async function isMaintainer(login: string, task?: KnightlyTask) {
+  return login && [...ADMIN_HANDLES, task?.owner, ...(task?.maintainers || [])].filter(Boolean).includes(login)
 }
 
 export async function checkVotes() {

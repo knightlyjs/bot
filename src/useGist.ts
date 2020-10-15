@@ -7,13 +7,16 @@ import { Sentry } from './sentry'
 
 export function useGist<T>(id: string, filename: string, init: T) {
   let writing = false
+  const isYAML = filename.match(/\.ya?ml$/i)
 
   const r = ref(init) as unknown as Ref<T> & { ready: () => Promise<void> }
 
   async function fetch() {
     const { data: gist } = await octokit.gists.get({ gist_id: id })
     writing = true
-    r.value = YAML.safeLoad(gist.files[filename].content || '{}') as unknown as T
+    r.value = isYAML
+      ? YAML.safeLoad(gist.files[filename].content || '{}') as unknown as T
+      : JSON.parse(gist.files[filename].content || '{}')
     writing = false
   }
 
@@ -24,7 +27,9 @@ export function useGist<T>(id: string, filename: string, init: T) {
         files: {
           [filename]: {
             filename,
-            content: YAML.safeDump(v),
+            content: isYAML
+              ? YAML.safeDump(v)
+              : JSON.stringify(v, null, 2),
           },
         },
       })

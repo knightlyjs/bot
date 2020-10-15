@@ -3,10 +3,10 @@ import pLimit from 'p-limit'
 import { BOT_NAME, octokit } from './config'
 import { logger } from './log'
 import { Confused } from './reactions'
-import { getRepo } from './store'
+import { getRepoTask } from './store'
 import { TEMPLATE_REPO_NOT_CONFIGURED } from './templates'
 import { getCommentIfFromUrl, getPullInfoFromUrl } from './utils'
-import { createVoteComment } from './vote'
+import { createVoteComment, isMaintainer, startBuildFor } from './vote'
 
 export async function checkNotifications() {
   logger.info('checking notifications...')
@@ -35,8 +35,13 @@ export async function checkNotifications() {
       logger.info(`comment received on ${chalk.green(`${pr.owner}/${pr.repo}#${pr.issue_number}(@${user?.login})`)} ${chalk.blue(body)}`)
 
       if (new RegExp(`@${BOT_NAME} build this`, 'i').exec(body)) {
-        if (getRepo(pr)) {
-          await createVoteComment(pr)
+        const task = getRepoTask(pr)
+
+        if (task) {
+          if (isMaintainer(user?.login))
+            await startBuildFor(task, pr)
+          else
+            await createVoteComment(pr)
         }
         else {
           Confused(pr, comment_id)

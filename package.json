@@ -51,11 +51,11 @@
     "dotenv": "^8.2.0",
     "esno": "^0.2.2",
     "js-yaml": "^3.14.0",
+    "knightly": "^0.3.5",
     "minimist": "^1.2.5",
     "p-limit": "^3.0.2",
     "throttle-debounce": "^2.3.0",
-    "winston": "^3.3.3",
-    "knightly": "^0.2.5"
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@antfu/eslint-config-ts": "^0.3.3",

@@ -1,18 +1,16 @@
-import { resolveUserConfig } from 'knightly'
 import pLimit from 'p-limit'
 import { octokit } from './config'
 import { logger } from './log'
-import { tasks, removePullTask } from './store'
+import { tasks, removePullJob } from './store'
 
 export async function cleanUpClosedPR() {
   logger.info('clean up PRs...')
 
-  const items = resolveUserConfig(tasks.value)
   const limit = pLimit(10)
 
   const pTasks: Promise<any>[] = []
 
-  for (const { owner, repo, pulls = [] } of items) {
+  for (const { owner, repo, pulls = [] } of tasks.value) {
     for (const pull_number of pulls) {
       pTasks.push(limit(async() => {
         const { data: pull } = await octokit.pulls.get({
@@ -22,7 +20,7 @@ export async function cleanUpClosedPR() {
         })
 
         if (pull?.state !== 'open') {
-          await removePullTask({
+          removePullJob({
             owner,
             repo,
             issue_number: pull_number,

@@ -1,4 +1,4 @@
-import type { KnightlyUserConfig } from 'knightly'
+import type { KnightlyTask } from 'knightly'
 import { KNIGHTLY_BOT_GIST_STORE, KNIGHTLY_BOT_GIST_TASKS } from './config'
 import { useGist } from './useGist'
 
@@ -20,11 +20,11 @@ export interface Store {
   votes: VoteInfo[]
 }
 
-export const store = useGist<Store>(KNIGHTLY_BOT_GIST_STORE, 'store.yml', {
+export const store = useGist<Store>(KNIGHTLY_BOT_GIST_STORE, 'store.json', {
   votes: [],
 })
 
-export const tasks = useGist<KnightlyUserConfig[]>(KNIGHTLY_BOT_GIST_TASKS, 'tasks.yml', [])
+export const tasks = useGist<KnightlyTask[]>(KNIGHTLY_BOT_GIST_TASKS, 'tasks.json', [])
 
 export function storeReady() {
   return Promise.all([
@@ -41,23 +41,20 @@ export function getVoteInfo(info: PullRequestInfo) {
   return store.value.votes.find(i => isSamePR(i, info))
 }
 
-export function getRepo({ owner, repo }: RepoInfo) {
+export function getRepoTask({ owner, repo }: RepoInfo) {
   return tasks.value
-    .find(i =>
-      (i.repoUrl && i.repoUrl === `${owner}/${repo}`)
-      || (i.repo === repo && i.owner === owner),
-    )
+    .find(i => i.repo === repo && i.owner === owner)
 }
 
-export function hasPullTask(info: PullRequestInfo) {
-  const repo = getRepo(info)
+export function hasPullJob(info: PullRequestInfo) {
+  const repo = getRepoTask(info)
   if (repo)
     return Boolean(repo.pulls?.includes(info.issue_number))
   return false
 }
 
-export function addPullTask(info: PullRequestInfo) {
-  const repo = getRepo(info)
+export function addPullJob(info: PullRequestInfo) {
+  const repo = getRepoTask(info)
   if (repo) {
     repo.pulls = Array.from(new Set([...(repo.pulls || []), info.issue_number]))
     return true
@@ -65,8 +62,8 @@ export function addPullTask(info: PullRequestInfo) {
   return false
 }
 
-export function removePullTask(info: PullRequestInfo) {
-  const repo = getRepo(info)
+export function removePullJob(info: PullRequestInfo) {
+  const repo = getRepoTask(info)
   if (repo?.pulls) {
     const index = repo.pulls.indexOf(info.issue_number)
     if (index >= 0) {
