@@ -1,7 +1,7 @@
 import { octokit } from './config'
 import { PullRequestInfo } from './store'
 
-export async function ReactTo({ owner, repo }: PullRequestInfo, comment_id: number, reaction: '+1' | '-1' | 'laugh' | 'confused' | 'heart' | 'hooray' | 'rocket' | 'eyes') {
+export async function reactTo({ owner, repo }: PullRequestInfo, comment_id: number, reaction: '+1' | '-1' | 'laugh' | 'confused' | 'heart' | 'hooray' | 'rocket' | 'eyes') {
   const { data } = await octokit.reactions.createForIssueComment({
     owner,
     repo,
@@ -12,10 +12,10 @@ export async function ReactTo({ owner, repo }: PullRequestInfo, comment_id: numb
   return data
 }
 
-export function ThumbsUp(pull: PullRequestInfo, comment_id: number) {
-  return ReactTo(pull, comment_id, '+1')
+export function thumbsUp(pull: PullRequestInfo, comment_id: number) {
+  return reactTo(pull, comment_id, '+1')
 }
 
-export function Confused(pull: PullRequestInfo, comment_id: number) {
-  return ReactTo(pull, comment_id, 'confused')
+export function confused(pull: PullRequestInfo, comment_id: number) {
+  return reactTo(pull, comment_id, 'confused')
 }

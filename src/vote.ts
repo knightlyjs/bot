@@ -3,7 +3,7 @@ import { KnightlyTask } from 'knightly'
 import pLimit from 'p-limit'
 import { ADMIN_HANDLES, octokit, VOTE_REQUIREMENT } from './config'
 import { logger } from './log'
-import { ThumbsUp } from './reactions'
+import { thumbsUp } from './reactions'
 import { Sentry } from './sentry'
 import { addPullJob, getRepoTask, getVoteInfo, hasPullJob, PullRequestInfo, store, VoteInfo } from './store'
 import { TEMPLATE_BUILD_ENABLED, TEMPLATE_VOTE, TEMPLATE_VOTE_SATISFIED } from './templates'
@@ -23,13 +23,17 @@ export async function createVoteComment(pr: PullRequestInfo) {
     satisfied: false,
   })
 
-  ThumbsUp(pr, comment.id)
+  thumbsUp(pr, comment.id)
+}
+
+export function getNpmLink(task: KnightlyTask, pull: PullRequestInfo) {
+  return `https://www.npmjs.com/package/${task.publishName}/v/pr${pull.issue_number}`
 }
 
 export async function startBuildFor(task: KnightlyTask, pull: PullRequestInfo) {
   const { data: comment } = await octokit.issues.createComment({
     ...pull,
-    body: TEMPLATE_BUILD_ENABLED(`https://www.npmjs.com/package/${task.publishName}/v/pr${pull.issue_number}`),
+    body: TEMPLATE_BUILD_ENABLED(getNpmLink(task, pull)),
   })
 
   addPullJob(pull)

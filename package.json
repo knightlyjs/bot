@@ -20,7 +20,7 @@
     "url": "git+https://github.com/knightlyjs/knightly-bot.git"
   },
   "scripts": {
-    "dev": "esno src/index.ts all",
+    "dev": "esno src/index.ts dev",
     "start": "esno src/index.ts",
     "lint": "eslint \"{src,test}/**/*.ts\"",
     "lint:fix": "npm run lint -- --fix"

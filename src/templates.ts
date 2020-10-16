@@ -25,3 +25,7 @@ This repo does not have Knightly configured yet.
 
 Please open a request issue to enable this repo in [knightlyjs/tasks](https://github.com/knightlyjs/tasks/issues/new?assignees=&labels=repo-request&template=knightly-build-request.md) first.
 `.trim()
+
+export const TEMPLATE_REPO_ON_CALL_START = (npmLink: string) => `
+Releases will be live on [npm](${npmLink}) soon. [Progress](https://github.com/knightlyjs/tasks/actions?query=workflow%3A%22On+Call%22)
+`.trim()
