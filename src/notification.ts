@@ -20,6 +20,43 @@ async function noConfigured(pr: PullRequestInfo) {
   })
 }
 
+async function commandBuildThis(pr: PullRequestInfo, comment_id: number, login: string) {
+  const task = getRepoTask(pr)
+  if (!task) {
+    confused(pr, comment_id)
+    noConfigured(pr)
+    return
+  }
+
+  if (hasPullJob(pr))
+    return
+  if (isMaintainer(login))
+    await startBuildFor(task, pr)
+  else
+    await createVoteComment(pr)
+}
+
+async function commandReleaseNow(pr: PullRequestInfo, comment_id: number, login: string) {
+  const task = getRepoTask(pr)
+
+  if (!task) {
+    confused(pr, comment_id)
+    noConfigured(pr)
+    return
+  }
+
+  if (!isMaintainer(login)) {
+    confused(pr, comment_id)
+    return
+  }
+
+  await dispatchOnCall(task, pr)
+  octokit.issues.createComment({
+    ...pr,
+    body: TEMPLATE_REPO_ON_CALL_START(getNpmLink(task, pr)),
+  })
+}
+
 export async function checkNotifications() {
   logger.info('checking notifications...')
 
@@ -39,53 +76,23 @@ export async function checkNotifications() {
 
       const {
         data: { body, user },
-      } = await octokit.issues.getComment({
-        ...pr,
-        comment_id,
-      })
+      } = await octokit.issues.getComment({ ...pr, comment_id })
 
       logger.info(`comment received on ${chalk.green(`${pr.owner}/${pr.repo}#${pr.issue_number}(@${user?.login})`)} ${chalk.blue(body)}`)
 
       if (!body.match(REGEX_PIN_BOT))
         return
 
-      if (body.match(REGEX_BUILD_THIS)) {
-        const task = getRepoTask(pr)
-        if (!task) {
-          confused(pr, comment_id)
-          noConfigured(pr)
-          return
-        }
+      const login = user.login
 
-        if (hasPullJob(pr))
-          return
-        if (isMaintainer(user?.login))
-          await startBuildFor(task, pr)
-        else
-          await createVoteComment(pr)
-      }
-      else if (body.match(REGEX_RELEASE_NOW)) {
-        const task = getRepoTask(pr)
-        if (!task) {
-          confused(pr, comment_id)
-          noConfigured(pr)
-          return
-        }
+      if (body.match(REGEX_BUILD_THIS))
+        await commandBuildThis(pr, comment_id, login)
 
-        if (!isMaintainer(user?.login)) {
-          confused(pr, comment_id)
-          return
-        }
+      else if (body.match(REGEX_RELEASE_NOW))
+        await commandReleaseNow(pr, comment_id, login)
 
-        await dispatchOnCall(task, pr)
-        octokit.issues.createComment({
-          ...pr,
-          body: TEMPLATE_REPO_ON_CALL_START(getNpmLink(task, pr)),
-        })
-      }
-      else {
+      else
         confused(pr, comment_id)
-      }
     })),
   )
 }

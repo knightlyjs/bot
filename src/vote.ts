@@ -3,6 +3,7 @@ import { KnightlyTask } from 'knightly'
 import pLimit from 'p-limit'
 import { ADMIN_HANDLES, octokit, VOTE_REQUIREMENT } from './config'
 import { logger } from './log'
+import { dispatchOnCall } from './oncall'
 import { thumbsUp } from './reactions'
 import { Sentry } from './sentry'
 import { addPullJob, getRepoTask, getVoteInfo, hasPullJob, PullRequestInfo, store, VoteInfo } from './store'
@@ -37,6 +38,8 @@ export async function startBuildFor(task: KnightlyTask, pull: PullRequestInfo) {
   })
 
   addPullJob(pull)
+
+  await dispatchOnCall(task, pull)
 
   return comment
 }
