@@ -30,7 +30,7 @@ async function commandBuildThis(pr: PullRequestInfo, comment_id: number, login: 
 
   if (hasPullJob(pr))
     return
-  if (isMaintainer(login))
+  if (isMaintainer(login, task))
     await startBuildFor(task, pr)
   else
     await createVoteComment(pr)
@@ -45,7 +45,7 @@ async function commandReleaseNow(pr: PullRequestInfo, comment_id: number, login:
     return
   }
 
-  if (!isMaintainer(login)) {
+  if (!isMaintainer(login, task)) {
     confused(pr, comment_id)
     return
   }

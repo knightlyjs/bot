@@ -68,11 +68,12 @@ export async function getCommentVotes({ owner, repo, issue_number, comment_id }:
   return data
 }
 
-export async function checkVoteSatisfied(vote: VoteInfo) {
+export async function checkVoteSatisfied(vote: VoteInfo, task?: KnightlyTask) {
   if (!vote.satisfied) {
     const votes = (await getCommentVotes(vote)).filter(i => i.content === '+1')
+    const task = getRepoTask(vote)
 
-    if (votes.length > VOTE_REQUIREMENT || votes.map(i => i.user.login).some(i => isMaintainer(i)))
+    if (votes.length > VOTE_REQUIREMENT || votes.map(i => i.user.login).some(i => isMaintainer(i, task)))
       vote.satisfied = true
   }
 
