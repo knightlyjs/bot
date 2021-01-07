@@ -1,6 +1,6 @@
 # Knightly Bot
 
-Scripts for [@knightly-bot](https://github.com/knightly-bot).
+Scripts for [@knightly-bot](https://github.com/knightly-bot)
 
 [![Nightly Build](https://github.com/knightlyjs/knightly/blob/main/res/badge.svg?raw=true)](https://github.com/knightlyjs/knightly)
 
