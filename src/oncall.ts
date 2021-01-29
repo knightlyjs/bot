@@ -12,8 +12,8 @@ export async function dispatchOnCall(repoTask: KnightlyTask, pr: PullRequestInfo
   const { data } = await octokit.actions.createWorkflowDispatch({
     owner: 'knightlyjs',
     repo: 'tasks',
-    // On Call, check out https://api.github.com/repos/knightlyjs/tasks/actions/workflows
-    workflow_id: 3030813,
+    // Build, check out https://api.github.com/repos/knightlyjs/tasks/actions/workflows
+    workflow_id: 5391077,
     ref: 'main',
     inputs: {
       tasks: JSON.stringify(tasks),
