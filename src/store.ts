@@ -24,7 +24,7 @@ export const store = useGist<Store>(KNIGHTLY_BOT_GIST_STORE, 'store.json', {
   votes: [],
 })
 
-export const tasks = useGit<KnightlyTask[]>('knightly', 'tasks', 'tasks.json', [])
+export const tasks = useGit<KnightlyTask[]>('knightlyjs', 'tasks', 'tasks.json', [])
 
 export function storeReady() {
   return Promise.all([
