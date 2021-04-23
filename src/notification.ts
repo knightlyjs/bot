@@ -75,15 +75,15 @@ export async function checkNotifications() {
         return
 
       const {
-        data: { body, user },
+        data: { body = '', user },
       } = await octokit.issues.getComment({ ...pr, comment_id })
 
-      logger.info(`comment received on ${chalk.green(`${pr.owner}/${pr.repo}#${pr.issue_number}(@${user?.login})`)} ${chalk.blue(body)}`)
+      const login = user?.login || ''
+
+      logger.info(`comment received on ${chalk.green(`${pr.owner}/${pr.repo}#${pr.issue_number}(@${login})`)} ${chalk.blue(body)}`)
 
       if (!body.match(REGEX_PIN_BOT))
         return
-
-      const login = user.login
 
       if (body.match(REGEX_BUILD_THIS))
         await commandBuildThis(pr, comment_id, login)

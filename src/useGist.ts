@@ -30,6 +30,10 @@ export function useGit<T>(owner: string, repo: string, filepath: string, init: T
         path: filepath,
         message: `chore: update "${filepath}"`,
         content: Base64.encode(content),
+        committer: {
+          name: 'Knightly Bot',
+          email: 'knightly-bot@antfu.me',
+        },
         author: {
           name: 'Knightly Bot',
           email: 'knightly-bot@antfu.me',

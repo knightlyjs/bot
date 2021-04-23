@@ -82,7 +82,7 @@ export async function checkVoteSatisfied(vote: VoteInfo, task?: KnightlyTask) {
 }
 
 export async function isMaintainer(login: string, task?: KnightlyTask) {
-  return login && [...ADMIN_HANDLES, task?.owner, ...(task?.maintainers || [])].filter(Boolean).includes(login)
+  return [...ADMIN_HANDLES, ...(task?.maintainers || [])].filter(notNullish).includes(login) && login
 }
 
 export async function checkVotes() {
