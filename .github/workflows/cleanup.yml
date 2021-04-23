@@ -21,4 +21,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           KNIGHTLY_BOT_GIST_STORE: ${{ secrets.KNIGHTLY_BOT_GIST_STORE }}
-          KNIGHTLY_BOT_GIST_TASKS: ${{ secrets.KNIGHTLY_BOT_GIST_TASKS }}

@@ -19,7 +19,6 @@ export const SENTRY_DSN = env.SENTRY_DSN
 export const HEROKU = env.HEROKU
 
 export const KNIGHTLY_BOT_GIST_STORE = env.KNIGHTLY_BOT_GIST_STORE
-export const KNIGHTLY_BOT_GIST_TASKS = env.KNIGHTLY_BOT_GIST_TASKS
 
 export const BOT_NAME = 'knightly-bot'
 export const VOTE_REQUIREMENT = 10

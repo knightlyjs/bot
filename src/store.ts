@@ -1,6 +1,6 @@
 import type { KnightlyTask } from 'knightly'
-import { KNIGHTLY_BOT_GIST_STORE, KNIGHTLY_BOT_GIST_TASKS } from './config'
-import { useGist } from './useGist'
+import { KNIGHTLY_BOT_GIST_STORE } from './config'
+import { useGist, useGit } from './useGist'
 
 export interface RepoInfo {
   owner: string
@@ -24,7 +24,7 @@ export const store = useGist<Store>(KNIGHTLY_BOT_GIST_STORE, 'store.json', {
   votes: [],
 })
 
-export const tasks = useGist<KnightlyTask[]>(KNIGHTLY_BOT_GIST_TASKS, 'tasks.json', [])
+export const tasks = useGit<KnightlyTask[]>('knightly', 'bot', 'tasks.json', [])
 
 export function storeReady() {
   return Promise.all([

@@ -1,4 +1,4 @@
-import delay from 'delay'
+import { sleep } from '@antfu/utils'
 import { Sentry } from './sentry'
 import { PullRequestInfo } from './store'
 
@@ -21,7 +21,7 @@ export async function loop(fn: () => Promise<void>, interval: number) {
 
   const delta = Math.max(0, lastTime + interval - now())
 
-  await delay(delta)
+  await sleep(delta)
 
   loop(fn, interval)
 }

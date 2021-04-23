@@ -1,3 +1,4 @@
+import { notNullish } from '@antfu/utils'
 import chalk from 'chalk'
 import { KnightlyTask } from 'knightly'
 import pLimit from 'p-limit'
@@ -71,9 +72,9 @@ export async function getCommentVotes({ owner, repo, issue_number, comment_id }:
 export async function checkVoteSatisfied(vote: VoteInfo, task?: KnightlyTask) {
   if (!vote.satisfied) {
     const votes = (await getCommentVotes(vote)).filter(i => i.content === '+1')
-    const task = getRepoTask(vote)
+    task = task || getRepoTask(vote)
 
-    if (votes.length > VOTE_REQUIREMENT || votes.map(i => i.user.login).some(i => isMaintainer(i, task)))
+    if (votes.length > VOTE_REQUIREMENT || votes.map(i => i.user?.login).filter(notNullish).some(i => isMaintainer(i, task)))
       vote.satisfied = true
   }
 

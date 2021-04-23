@@ -1,13 +1,8 @@
-import { BOT_NAME, KNIGHTLY_BOT_GIST_STORE, KNIGHTLY_BOT_GIST_TASKS, octokit } from './config'
+import { BOT_NAME, KNIGHTLY_BOT_GIST_STORE, octokit } from './config'
 
 export async function checkBotName() {
   if (!KNIGHTLY_BOT_GIST_STORE) {
     console.error('Invalid KNIGHTLY_BOT_GIST_STORE provided.')
-    process.exit(1)
-  }
-
-  if (!KNIGHTLY_BOT_GIST_TASKS) {
-    console.error('Invalid KNIGHTLY_BOT_GIST_TASKS provided.')
     process.exit(1)
   }
 
