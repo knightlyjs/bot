@@ -18,7 +18,7 @@ export function useGit<T>(owner: string, repo: string, filepath: string, init: T
       path: filepath,
     })
     writing = true
-    r.value = JSON.parse((data as any)?.content || '{}')
+    r.value = JSON.parse(Base64.decode((data as any)?.content || '') || '{}')
     writing = false
   }
 
@@ -55,6 +55,10 @@ export function useGit<T>(owner: string, repo: string, filepath: string, init: T
   )
 
   const _p = fetch()
+    .catch((e) => {
+      console.error(e)
+      process.exit(1)
+    })
 
   Object.defineProperty(r, 'ready', { value: () => _p })
 
@@ -109,6 +113,10 @@ export function useGist<T>(id: string, filename: string, init: T) {
   )
 
   const _p = fetch()
+    .catch((e) => {
+      console.error(e)
+      process.exit(1)
+    })
 
   Object.defineProperty(r, 'ready', { value: () => _p })
 
