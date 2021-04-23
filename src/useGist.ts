@@ -38,7 +38,7 @@ export function useGit<T>(owner: string, repo: string, filepath: string, init: T
     }
     catch (e) {
       Sentry.captureException(e)
-      console.error(e)
+      throw e
     }
   }
 
@@ -92,7 +92,7 @@ export function useGist<T>(id: string, filename: string, init: T) {
     }
     catch (e) {
       Sentry.captureException(e)
-      console.error(e)
+      throw e
     }
   }
 
